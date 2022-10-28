@@ -91,27 +91,27 @@ public class StudentInfo {
 	
 	// Performs a search with a given query.
 	public Vector<Result> search(String query) {
-		Vector<Result> results = new Vector<>();
+		Vector<Result> results = new Vector<>(); // Holds the results of the search.
 		
-		for(String fileName : this.settings.getDataFileNames()) {
+		for(String fileName : this.settings.getDataFileNames()) { // Loops through all files in settings.
 			try {
-				BufferedReader fin = new BufferedReader(new FileReader(new File(fileName)));
+				BufferedReader fin = new BufferedReader(new FileReader(new File(fileName))); // Initialize file reader.
 				
-				Vector<String> headers = new Vector<>();
-				headers.add("File");
-				headers.addAll(parseLine(fin.readLine()));
+				Vector<String> headers = new Vector<>(); // Holds the column titles.
+				headers.add("File"); // Manually add the File title to the headers.
+				headers.addAll(parseLine(fin.readLine())); // Reads the first line and parses it.
 				
-				while(fin.ready()) {
-					String line = fin.readLine();
-					if(line.toLowerCase().contains(query.toLowerCase())) {
-						Vector<String> data = new Vector<>();
-						data.add(fileName);
+				while(fin.ready()) { // While file reader has a next line keep looping.
+					String line = fin.readLine(); // Read line from file.
+					if(line.toLowerCase().contains(query.toLowerCase())) { // Check if query is in the line.
+						Vector<String> data = new Vector<>(); // Holds the data in the same order as headers.
+						data.add(fileName); // Manually add file name to data.
 						
-						Result result = new Result();
-						result.setLabels(headers);
-						data.addAll(parseLine(line));
-						result.setData(data);
-						results.add(result);
+						Result result = new Result(); // Creates a new Result object to hold the headers and data.
+						result.setLabels(headers);  // Sets the result object's labels with the headers.
+						data.addAll(parseLine(line)); // Parse the line and adds it to data.
+						result.setData(data); // Sets the result object's data to data.
+						results.add(result); // Adds result to the results vector.
 					}
 				}
 				
@@ -125,24 +125,25 @@ public class StudentInfo {
 	}
 	
 	private Vector<String> parseLine(String line) {
-		Vector<String> ret = new Vector<>();
+		Vector<String> ret = new Vector<>(); // Create a vector to hold the parsed data.
 		
-		Boolean insideQuote = false;
-		String section = "";
+		Boolean insideQuote = false; // Tracks if the parser is inside of quotes.
+		String section = ""; // Temporary string that holds a parsed section.
 		
-		for(Character c : line.toCharArray()) {
+		for(Character c : line.toCharArray()) { // Loops through passed string's characters.
 			if(c == '\"') {
+				// If character is a quote switch insideQuote.
 				insideQuote = !insideQuote;
 			}else if(c == ',' && !insideQuote) {
+				// If character is a comma and it is not inside a quote add section string to ret.
 				ret.add(section);
-				section = "";
+				section = ""; // Clears the section string.
 			}else {
+				// For all other characters add them to section.
 				section += c;
 			}
-			
 		}
-		
-		ret.add(section);
+		ret.add(section); // Adds the last section to ret.
 		
 		return ret;
 	}
